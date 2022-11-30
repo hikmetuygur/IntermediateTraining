@@ -18,16 +18,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
-        let lightRed = UIColor(hexString: "#EB6440")
-        
-        UINavigationBar.appearance().tintColor = .white
-        UINavigationBar.appearance().prefersLargeTitles = true
-        UINavigationBar.appearance().barTintColor = lightRed
-        
         if #available(iOS 13.0, *) {
+            
+            let orange = UIColor(hexString: "#EB6440")
+            
             let appearance = UINavigationBarAppearance()
             UINavigationBar.appearance().tintColor = .white
-            appearance.backgroundColor = lightRed
+            appearance.backgroundColor = orange
             appearance.largeTitleTextAttributes = [.foregroundColor : UIColor.white] //portrait title
             appearance.titleTextAttributes = [.foregroundColor : UIColor.white] //landscape title
             

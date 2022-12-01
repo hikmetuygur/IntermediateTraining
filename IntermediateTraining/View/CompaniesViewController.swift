@@ -6,22 +6,21 @@
 //
 
 import UIKit
+import CoreData
 
 class CompaniesViewController: UITableViewController, CreateNewCompanyDelegate {
    
-    
-    var companies = [
-        Company(name: "Apple", founded: Date()),
-        Company(name: "Google", founded: Date()),
-        Company(name: "Amazon", founded: Date())
-    ]
+    //MARK: - Variables
+    var companies = [Company]()
 
+    //MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         
         navigationItem.title = "Companies"
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "plus.circle"), style: .plain, target: self, action: #selector(handleAddCompany))
         
+        fetchCompanies()
         setupNavigationStyle()
         
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cellId")
@@ -31,11 +30,10 @@ class CompaniesViewController: UITableViewController, CreateNewCompanyDelegate {
         tableView.tableFooterView = UIView() //bland UIView
     }
     
+    //MARK: - Objc functions
     @objc func handleAddCompany() {
         
         let createCompanyController = CreateCompanyViewController()
-//        createCompanyController.view.backgroundColor = .green
-        
         let NavCompanyController = CustomNavigationController(rootViewController: createCompanyController)
         
         createCompanyController.delegate = self
@@ -43,12 +41,30 @@ class CompaniesViewController: UITableViewController, CreateNewCompanyDelegate {
         present(NavCompanyController, animated: true, completion: nil)
     }
     
+    //MARK: - Functions
     func didAddCompany(company: Company) {
         companies.append(company)
         
         let newIndexPath = IndexPath(row: companies.count - 1, section: 0)
         
         tableView.insertRows(at: [newIndexPath], with: .automatic)
+    }
+    
+    func fetchCompanies() {
+        
+        let context = CoreDataManager.shared.persistentContainer.viewContext
+        let fetchRequest = NSFetchRequest<Company>(entityName: "Company")
+        
+        do {
+            let companies = try context.fetch(fetchRequest)
+            self.companies = companies
+            self.tableView.reloadData()
+        } catch let fetchErr {
+            fatalError("Fetch Request Failed: \(fetchErr)")
+        }
+        
+        
+         
     }
     
     override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {

@@ -17,6 +17,8 @@
 		851AE2762937838100B95D0B /* Company.swift in Sources */ = {isa = PBXBuildFile; fileRef = 851AE2752937838100B95D0B /* Company.swift */; };
 		851AE27829378F0700B95D0B /* CreateCompanyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 851AE27729378F0700B95D0B /* CreateCompanyViewController.swift */; };
 		851AE27D293796D500B95D0B /* UIViewControllerExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 851AE27C293796D500B95D0B /* UIViewControllerExtensions.swift */; };
+		851AE2882939152000B95D0B /* IntermediateTrainingCoreDataModels.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 851AE2862939152000B95D0B /* IntermediateTrainingCoreDataModels.xcdatamodeld */; };
+		851AE28B29391AFA00B95D0B /* CoreDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 851AE28A29391AFA00B95D0B /* CoreDataManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,6 +34,8 @@
 		851AE2752937838100B95D0B /* Company.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Company.swift; sourceTree = "<group>"; };
 		851AE27729378F0700B95D0B /* CreateCompanyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateCompanyViewController.swift; sourceTree = "<group>"; };
 		851AE27C293796D500B95D0B /* UIViewControllerExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewControllerExtensions.swift; sourceTree = "<group>"; };
+		851AE2872939152000B95D0B /* IntermediateTrainingCoreDataModels.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = IntermediateTrainingCoreDataModels.xcdatamodel; sourceTree = "<group>"; };
+		851AE28A29391AFA00B95D0B /* CoreDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -65,7 +69,8 @@
 			isa = PBXGroup;
 			children = (
 				851AE27A29378F7100B95D0B /* Model */,
-				851AE27929378F3900B95D0B /* ViewController */,
+				851AE27929378F3900B95D0B /* View */,
+				851AE28929391AD900B95D0B /* Controller */,
 				851AE2742937652600B95D0B /* Extensions */,
 				851AE25E29362C9400B95D0B /* AppDelegate.swift */,
 				851AE26029362C9400B95D0B /* SceneDelegate.swift */,
@@ -73,6 +78,7 @@
 				851AE26729362C9900B95D0B /* Assets.xcassets */,
 				851AE26929362C9900B95D0B /* LaunchScreen.storyboard */,
 				851AE26C29362C9900B95D0B /* Info.plist */,
+				851AE2862939152000B95D0B /* IntermediateTrainingCoreDataModels.xcdatamodeld */,
 			);
 			path = IntermediateTraining;
 			sourceTree = "<group>";
@@ -86,13 +92,13 @@
 			path = Extensions;
 			sourceTree = "<group>";
 		};
-		851AE27929378F3900B95D0B /* ViewController */ = {
+		851AE27929378F3900B95D0B /* View */ = {
 			isa = PBXGroup;
 			children = (
 				851AE26229362C9400B95D0B /* CompaniesViewController.swift */,
 				851AE27729378F0700B95D0B /* CreateCompanyViewController.swift */,
 			);
-			path = ViewController;
+			path = View;
 			sourceTree = "<group>";
 		};
 		851AE27A29378F7100B95D0B /* Model */ = {
@@ -101,6 +107,14 @@
 				851AE2752937838100B95D0B /* Company.swift */,
 			);
 			path = Model;
+			sourceTree = "<group>";
+		};
+		851AE28929391AD900B95D0B /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				851AE28A29391AFA00B95D0B /* CoreDataManager.swift */,
+			);
+			path = Controller;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -179,6 +193,8 @@
 				851AE25F29362C9400B95D0B /* AppDelegate.swift in Sources */,
 				851AE26129362C9400B95D0B /* SceneDelegate.swift in Sources */,
 				851AE2762937838100B95D0B /* Company.swift in Sources */,
+				851AE2882939152000B95D0B /* IntermediateTrainingCoreDataModels.xcdatamodeld in Sources */,
+				851AE28B29391AFA00B95D0B /* CoreDataManager.swift in Sources */,
 				851AE273293764FB00B95D0B /* UIColorExtensions.swift in Sources */,
 				851AE27D293796D500B95D0B /* UIViewControllerExtensions.swift in Sources */,
 			);
@@ -400,6 +416,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		851AE2862939152000B95D0B /* IntermediateTrainingCoreDataModels.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				851AE2872939152000B95D0B /* IntermediateTrainingCoreDataModels.xcdatamodel */,
+			);
+			currentVersion = 851AE2872939152000B95D0B /* IntermediateTrainingCoreDataModels.xcdatamodel */;
+			path = IntermediateTrainingCoreDataModels.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 851AE25329362C9400B95D0B /* Project object */;
 }

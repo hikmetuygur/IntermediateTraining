@@ -6,13 +6,16 @@
 //
 
 import UIKit
+import CoreData
 
 protocol CreateNewCompanyDelegate {
     func didAddCompany(company: Company)
 }
 
 class CreateCompanyViewController: UIViewController {
-
+    
+    //MARK: - Variables
+    
     var delegate: CreateNewCompanyDelegate?
 
     let nameLabel: UILabel = {
@@ -31,6 +34,9 @@ class CreateCompanyViewController: UIViewController {
         return textField
     }()
 
+    
+    //MARK: - Functions
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -41,7 +47,7 @@ class CreateCompanyViewController: UIViewController {
         navigationItem.title = "Create Company"
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "chevron.backward"), style: .plain, target: self, action: #selector(handleCancel))
 
-        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "plus"), style: .plain, target: self, action: #selector(handleAddButton))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "plus"), style: .plain, target: self, action: #selector(handleSave))
         navigationItem.leftBarButtonItem?.tintColor = .white
 
         setupNavigationStyle()
@@ -75,18 +81,28 @@ class CreateCompanyViewController: UIViewController {
         nameTextField.topAnchor.constraint(equalTo: nameLabel.topAnchor).isActive = true
     }
 
+    //MARK: - Objc functions
+    
     @objc func handleCancel() {
         dismiss(animated: true, completion: nil)
     }
 
-    @objc func handleAddButton() {
-
-        dismiss(animated: true) {
-            guard let name = self.nameTextField.text else { return }
-
-            let company = Company(name: name, founded: Date())
-
-            self.delegate?.didAddCompany(company: company)
+    @objc func handleSave() {
+        
+        let context = CoreDataManager.shared.persistentContainer.viewContext
+        
+        let company = NSEntityDescription.insertNewObject(forEntityName: "Company", into: context)
+        company.setValue(nameTextField.text, forKey: "name")
+        do {
+            try context.save()
+            dismiss(animated: true) {
+                self.delegate?.didAddCompany(company: company as! Company)
+            }
+            
+        } catch let saveErr {
+            fatalError("Save Failed: \(saveErr)")
         }
+        
+        
     }
 }

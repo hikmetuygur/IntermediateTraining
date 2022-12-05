@@ -9,52 +9,52 @@ import UIKit
 import CoreData
 
 class CompaniesViewController: UITableViewController, CreateNewCompanyDelegate {
-   
+
     //MARK: - Variables
     var companies = [Company]()
 
     //MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         navigationItem.title = "Companies"
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "plus.circle"), style: .plain, target: self, action: #selector(handleAddCompany))
-        
+
         fetchCompanies()
         setupNavigationStyle()
-        
+
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cellId")
         tableView.backgroundColor = UIColor(hexString: "#D6E4E5")
 //        tableView.separatorStyle = .none
         tableView.separatorColor = .white
         tableView.tableFooterView = UIView() //bland UIView
     }
-    
+
     //MARK: - Objc functions
     @objc func handleAddCompany() {
-        
+
         let createCompanyController = CreateCompanyViewController()
         let NavCompanyController = CustomNavigationController(rootViewController: createCompanyController)
-        
+
         createCompanyController.delegate = self
-        
+
         present(NavCompanyController, animated: true, completion: nil)
     }
-    
+
     //MARK: - Functions
     func didAddCompany(company: Company) {
         companies.append(company)
-        
+
         let newIndexPath = IndexPath(row: companies.count - 1, section: 0)
-        
+
         tableView.insertRows(at: [newIndexPath], with: .automatic)
     }
-    
+
     func fetchCompanies() {
-        
+
         let context = CoreDataManager.shared.persistentContainer.viewContext
         let fetchRequest = NSFetchRequest<Company>(entityName: "Company")
-        
+
         do {
             let companies = try context.fetch(fetchRequest)
             self.companies = companies
@@ -62,34 +62,60 @@ class CompaniesViewController: UITableViewController, CreateNewCompanyDelegate {
         } catch let fetchErr {
             fatalError("Fetch Request Failed: \(fetchErr)")
         }
-        
-        
-         
     }
     
+    //MARK: - Functions
+    
+    override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+            //Delete Action
+            let deleteItem = UIContextualAction(style: .destructive, title: "delete") { (action, view, bool) in
+                let company = self.companies[indexPath.row]
+                //update array
+                self.companies.remove(at: indexPath.row)
+                //update table view
+                self.tableView.deleteRows(at: [indexPath], with: .automatic)
+                //update core data
+                let context = CoreDataManager.shared.persistentContainer.viewContext
+                context.delete(company)
+                do {
+                    try context.save()
+                }catch let saveErr {
+                    print("failed to delete company", saveErr)
+                }
+            }
+            
+            //Edit Action
+            let editItem = UIContextualAction(style: .normal, title: "Edit") { (action, view, bool) in
+                print("edit")
+            }
+            let swipeAction = UISwipeActionsConfiguration(actions: [deleteItem, editItem])
+            return swipeAction
+            
+        }
+
     override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let view = UIView()
         view.backgroundColor = UIColor(hexString: "#D6E4E5")
         return view
     }
-    
+
     override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return 50
     }
-    
+
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cellId", for: indexPath)
         cell.backgroundColor = UIColor(hexString: "#497174")
-        
+
         let company = companies[indexPath.row]
-        
+
         cell.textLabel?.text = company.name
         cell.textLabel?.textColor = .white
         return cell
     }
-    
+
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return companies.count
     }
-    
+
 }

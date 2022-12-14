@@ -9,6 +9,8 @@ import UIKit
 import CoreData
 
 class CompaniesViewController: UITableViewController, CreateNewCompanyDelegate {
+    
+    
 
     //MARK: - Variables
     var companies = [Company]()
@@ -49,6 +51,13 @@ class CompaniesViewController: UITableViewController, CreateNewCompanyDelegate {
 
         tableView.insertRows(at: [newIndexPath], with: .automatic)
     }
+    
+    func didEditCompany(company: Company) {
+        // update tableView
+        let row = companies.firstIndex(of: company)
+        let reloadIndexPath = IndexPath(row: row!, section: 0)
+        tableView.reloadRows(at: [reloadIndexPath], with: .middle)
+    }
 
     func fetchCompanies() {
 
@@ -63,35 +72,50 @@ class CompaniesViewController: UITableViewController, CreateNewCompanyDelegate {
             fatalError("Fetch Request Failed: \(fetchErr)")
         }
     }
-    
+
     //MARK: - Functions
-    
+
     override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-            //Delete Action
-            let deleteItem = UIContextualAction(style: .destructive, title: "delete") { (action, view, bool) in
-                let company = self.companies[indexPath.row]
-                //update array
-                self.companies.remove(at: indexPath.row)
-                //update table view
-                self.tableView.deleteRows(at: [indexPath], with: .automatic)
-                //update core data
-                let context = CoreDataManager.shared.persistentContainer.viewContext
-                context.delete(company)
-                do {
-                    try context.save()
-                }catch let saveErr {
-                    print("failed to delete company", saveErr)
-                }
+
+        //Delete Action
+        let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { (action, view, bool) in
+            let company = self.companies[indexPath.row]
+            //update array
+            self.companies.remove(at: indexPath.row)
+            //update table view
+            self.tableView.deleteRows(at: [indexPath], with: .automatic)
+            //update core data
+            let context = CoreDataManager.shared.persistentContainer.viewContext
+            context.delete(company)
+            do {
+                try context.save()
+            } catch let saveErr {
+                print("failed to delete company", saveErr)
             }
-            
-            //Edit Action
-            let editItem = UIContextualAction(style: .normal, title: "Edit") { (action, view, bool) in
-                print("edit")
-            }
-            let swipeAction = UISwipeActionsConfiguration(actions: [deleteItem, editItem])
-            return swipeAction
-            
         }
+        
+        deleteAction.backgroundColor = .red
+
+        //Edit Action
+        let editAction = UIContextualAction(style: .normal, title: "Edit") { (action, view, bool) in
+            print("edit")
+
+            //perform edit
+            
+            let editCompanyController = CreateCompanyViewController()
+            editCompanyController.delegate = self
+            editCompanyController.company = self.companies[indexPath.row]
+            let navController = CustomNavigationController(rootViewController: editCompanyController)
+            self.present(navController, animated: true, completion: nil)
+        }
+        
+        editAction.backgroundColor = UIColor(hexString: "#FF9E9E")
+        
+        let swipeAction = UISwipeActionsConfiguration(actions: [deleteAction, editAction])
+        return swipeAction
+
+    }
+
 
     override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let view = UIView()

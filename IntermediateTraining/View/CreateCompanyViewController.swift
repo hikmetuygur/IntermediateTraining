@@ -10,6 +10,7 @@ import CoreData
 
 protocol CreateNewCompanyDelegate {
     func didAddCompany(company: Company)
+    func didEditCompany(company: Company)
 }
 
 class CreateCompanyViewController: UIViewController {
@@ -17,6 +18,15 @@ class CreateCompanyViewController: UIViewController {
     //MARK: - Variables
     
     var delegate: CreateNewCompanyDelegate?
+    
+    var company: Company? {
+        didSet{
+            nameTextField.text = company?.name
+        }
+    }
+    
+    
+    
 
     let nameLabel: UILabel = {
         let label = UILabel()
@@ -43,14 +53,19 @@ class CreateCompanyViewController: UIViewController {
         setupUI()
 
         view.backgroundColor = UIColor(hexString: "#D6E4E5")
-
-        navigationItem.title = "Create Company"
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "chevron.backward"), style: .plain, target: self, action: #selector(handleCancel))
 
-        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "plus"), style: .plain, target: self, action: #selector(handleSave))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Save", style: .plain, target: self, action: #selector(handleSave))
         navigationItem.leftBarButtonItem?.tintColor = .white
 
         setupNavigationStyle()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        //Ternary syntax
+        navigationItem.title = company == nil ?  "Create Company" : "Edit Company"
     }
 
     private func setupUI() {
@@ -89,10 +104,19 @@ class CreateCompanyViewController: UIViewController {
 
     @objc func handleSave() {
         
-        let context = CoreDataManager.shared.persistentContainer.viewContext
+        if company == nil {
+            createFunctionSave()
+        } else {
+            editFunctionSave()
+        }
         
+    }
+    
+    private func createFunctionSave() {
+        let context = CoreDataManager.shared.persistentContainer.viewContext
         let company = NSEntityDescription.insertNewObject(forEntityName: "Company", into: context)
         company.setValue(nameTextField.text, forKey: "name")
+        
         do {
             try context.save()
             dismiss(animated: true) {
@@ -101,6 +125,22 @@ class CreateCompanyViewController: UIViewController {
             
         } catch let saveErr {
             fatalError("Save Failed: \(saveErr)")
+        }
+    }
+    
+    private func editFunctionSave() {
+        
+        let context = CoreDataManager.shared.persistentContainer.viewContext
+        
+        company?.name = nameTextField.text
+        
+        do {
+            try context.save()
+            dismiss(animated: true) {
+                self.delegate?.didEditCompany(company: self.company!)
+            }
+        } catch let editSaveErr {
+            fatalError("Edit Failed: \(editSaveErr)")
         }
         
         

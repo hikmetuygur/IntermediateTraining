@@ -14,19 +14,20 @@ protocol CreateNewCompanyDelegate {
 }
 
 class CreateCompanyViewController: UIViewController {
-    
+
     //MARK: - Variables
-    
+
     var delegate: CreateNewCompanyDelegate?
-    
+
     var company: Company? {
-        didSet{
+        didSet {
             nameTextField.text = company?.name
+            
+            guard let founded = company?.founded else {return}
+            datePicker.date = founded
         }
     }
-    
-    
-    
+
 
     let nameLabel: UILabel = {
         let label = UILabel()
@@ -44,9 +45,17 @@ class CreateCompanyViewController: UIViewController {
         return textField
     }()
 
-    
+    let datePicker: UIDatePicker = {
+        let dp = UIDatePicker()
+        dp.preferredDatePickerStyle = .wheels
+        dp.datePickerMode = .date
+        dp.translatesAutoresizingMaskIntoConstraints = false
+        return dp
+    }()
+
+
     //MARK: - Functions
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -60,25 +69,23 @@ class CreateCompanyViewController: UIViewController {
 
         setupNavigationStyle()
     }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+
         //Ternary syntax
-        navigationItem.title = company == nil ?  "Create Company" : "Edit Company"
+        navigationItem.title = company == nil ? "Create Company" : "Edit Company"
     }
 
     private func setupUI() {
-
         let backgroundView = UIView()
-        backgroundView.backgroundColor = UIColor(hexString: "#D6E4E5")
+        backgroundView.backgroundColor = UIColor(hexString: "#FEBE8C")
         backgroundView.translatesAutoresizingMaskIntoConstraints = false
-
         view.addSubview(backgroundView)
         backgroundView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
         backgroundView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
         backgroundView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
-        backgroundView.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        backgroundView.heightAnchor.constraint(equalToConstant: 250).isActive = true
         backgroundView.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: 50)
 
         view.addSubview(nameLabel)
@@ -94,46 +101,54 @@ class CreateCompanyViewController: UIViewController {
         nameTextField.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
         nameTextField.bottomAnchor.constraint(equalTo: nameLabel.bottomAnchor).isActive = true
         nameTextField.topAnchor.constraint(equalTo: nameLabel.topAnchor).isActive = true
+        
+        view.addSubview(datePicker)
+        datePicker.topAnchor.constraint(equalTo: nameLabel.bottomAnchor).isActive = true
+        datePicker.bottomAnchor.constraint(equalTo: backgroundView.bottomAnchor).isActive = true
+        datePicker.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
+        datePicker.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
     }
 
     //MARK: - Objc functions
-    
+
     @objc func handleCancel() {
         dismiss(animated: true, completion: nil)
     }
 
     @objc func handleSave() {
-        
+
         if company == nil {
             createFunctionSave()
         } else {
             editFunctionSave()
         }
-        
+
     }
-    
+
     private func createFunctionSave() {
         let context = CoreDataManager.shared.persistentContainer.viewContext
         let company = NSEntityDescription.insertNewObject(forEntityName: "Company", into: context)
         company.setValue(nameTextField.text, forKey: "name")
-        
+        company.setValue(datePicker.date, forKey: "founded")
+
         do {
             try context.save()
             dismiss(animated: true) {
                 self.delegate?.didAddCompany(company: company as! Company)
             }
-            
+
         } catch let saveErr {
             fatalError("Save Failed: \(saveErr)")
         }
     }
-    
+
     private func editFunctionSave() {
-        
+
         let context = CoreDataManager.shared.persistentContainer.viewContext
-        
+
         company?.name = nameTextField.text
-        
+        company?.founded = datePicker.date
+
         do {
             try context.save()
             dismiss(animated: true) {
@@ -142,7 +157,7 @@ class CreateCompanyViewController: UIViewController {
         } catch let editSaveErr {
             fatalError("Edit Failed: \(editSaveErr)")
         }
-        
-        
+
+
     }
 }

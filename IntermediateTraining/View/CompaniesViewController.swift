@@ -132,8 +132,26 @@ class CompaniesViewController: UITableViewController, CreateNewCompanyDelegate {
         cell.backgroundColor = UIColor(hexString: "#497174")
 
         let company = companies[indexPath.row]
-
-        cell.textLabel?.text = company.name
+        
+        if let name = company.name, let founded = company.founded {
+            
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "MMM dd, yyyy"
+            
+            let foundedDateString = dateFormatter.string(from: founded)
+            
+//            locale date format
+//            let locale = Locale(identifier: "EN")
+//            let dateString = "\(name) - Founded: \(founded.description(with: locale))"
+            
+            let dateString = "\(name) - Founded: \(foundedDateString)"
+            
+            
+            cell.textLabel?.text = dateString
+        } else {
+            cell.textLabel?.text = company.name
+        }
+        
         cell.textLabel?.textColor = .white
         return cell
     }
